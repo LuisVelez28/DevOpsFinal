@@ -1,25 +1,32 @@
-name: CD - Deploy to EC2
+name: CD - 2. Deploy Application Update
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Se activa manualmente
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to EC2 instance
+      - name: Deploy Application Update to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ~/final-project || (git clone https://github.com/LuisVelez28/DevOpsFinal.git final-project && cd final-project)
-
+            cd ~/final-project
+            
+            # Se asegura de tener la última versión del docker-compose.yaml
             git pull
 
+            # Inicia sesión en Nexus para poder descargar imágenes privadas
+            echo "Iniciando sesión en Nexus..."
             docker login ${{ secrets.NEXUS_DOCKER_REPO_URL }} -u ${{ secrets.NEXUS_USER }} -p ${{ secrets.NEXUS_PASSWORD }}
 
-            docker-compose pull
+            # Descarga la última versión de la imagen de la aplicación desde Nexus
+            echo "Descargando la nueva imagen de la aplicación..."
+            docker-compose pull app
 
-            docker-compose up -d
+            # Reinicia únicamente el contenedor de la aplicación con la nueva imagen
+            echo "Reiniciando el servicio de la aplicación..."
+            docker-compose up -d --no-deps app
