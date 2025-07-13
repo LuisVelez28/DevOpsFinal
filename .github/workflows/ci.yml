@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - develop
-      - 'feature/**'
 
 jobs:
   test-build-and-push:
