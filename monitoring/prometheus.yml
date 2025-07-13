@@ -1,0 +1,10 @@
+# monitoring/prometheus.yml
+global:
+  scrape_interval: 15s # Le dice a Prometheus que recolecte métricas cada 15 segundos
+
+scrape_configs:
+  - job_name: 'fastapi-app'
+    static_configs:
+      # Aquí está la magia: le decimos que busque un servicio llamado 'app' en el puerto 5000.
+      # Docker Compose se encargará de que 'app' se resuelva a la IP del contenedor correcto.
+      - targets: ['app:5000']

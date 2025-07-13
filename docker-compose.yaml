@@ -1,0 +1,62 @@
+# Define la versión de la sintaxis de Docker Compose
+version: '3.8'
+
+# Aquí empieza la definición de todos nuestros servicios (contenedores)
+services:
+
+  # 1. El servicio de nuestra aplicación FastAPI
+  app:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # 2. El servicio de Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # 3. El servicio de Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - app-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # 4. El servicio de Nexus
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# Define los volúmenes para persistir datos
+volumes:
+  grafana-data:
+  nexus-data:
+
+# Define la red que usarán los contenedores para comunicarse
+networks:
+  app-network:
