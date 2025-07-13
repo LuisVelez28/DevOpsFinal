@@ -21,5 +21,5 @@ async def test_add_client_successfully():
         
     assert response.status_code == 200
     response_json = response.json()
-    assert response_json["message"] == "Client added"
+    assert response_json["message"] == "Client added successfully"
     assert "client_id" in response_json
