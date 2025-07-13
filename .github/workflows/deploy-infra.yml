@@ -1,7 +1,7 @@
 name: CD - 1. Deploy Infrastructure
 
 on:
-  workflow_dispatch: # Se activa manualmente
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -14,24 +14,14 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            # Clona el repositorio si no existe, o entra en él
             cd ~/final-project || git clone https://github.com/LuisVelez28/DevOpsFinal.git final-project
             cd ~/final-project
-            
-            # Trae la última versión del código
             git checkout main
             git pull
-            
-            # Levanta toda la infraestructura.
-            # Docker Compose construirá la imagen de la app localmente la primera vez.
             echo "Levantando toda la infraestructura con Docker Compose..."
             docker-compose up -d
-            
-            # Espera un momento para que Nexus genere la contraseña
             echo "Esperando a que Nexus genere la contraseña inicial..."
-            sleep 60 
-            
-            # Muestra la contraseña inicial de Nexus en los logs del pipeline
+            sleep 60
             echo "------------------------------------------------------------------"
             echo "CONTRASEÑA DE NEXUS (guardar en secrets como NEXUS_PASSWORD):"
             docker exec nexus cat /nexus-data/admin.password

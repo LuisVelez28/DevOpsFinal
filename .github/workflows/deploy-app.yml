@@ -1,7 +1,7 @@
 name: CD - 2. Deploy Application Update
 
 on:
-  workflow_dispatch: # Se activa manualmente
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -15,18 +15,10 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd ~/final-project
-            
-            # Se asegura de tener la última versión del docker-compose.yaml
             git pull
-
-            # Inicia sesión en Nexus para poder descargar imágenes privadas
             echo "Iniciando sesión en Nexus..."
             docker login ${{ secrets.NEXUS_DOCKER_REPO_URL }} -u ${{ secrets.NEXUS_USER }} -p ${{ secrets.NEXUS_PASSWORD }}
-
-            # Descarga la última versión de la imagen de la aplicación desde Nexus
             echo "Descargando la nueva imagen de la aplicación..."
             docker-compose pull app
-
-            # Reinicia únicamente el contenedor de la aplicación con la nueva imagen
             echo "Reiniciando el servicio de la aplicación..."
             docker-compose up -d --no-deps app
