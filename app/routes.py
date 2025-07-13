@@ -24,7 +24,7 @@ class SaleIn(BaseModel):
 def add_client(client: ClientIn):
     client_id = str(uuid4())
     clients[client_id] = {"id": client_id, "name": client.name}
-    return {"message": "Client added", "client_id": client_id}
+    return {"message": "Client added successfully", "client_id": client_id}
 
 @router.post("/products")
 def add_product(product: ProductIn):
